@@ -1,0 +1,3827 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>DopeOrca CRM</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <style>
+      :root {
+        --bg: #07080a;
+        --s1: #0d0e11;
+        --s2: #131417;
+        --s3: #1a1b1f;
+        --s4: #22232a;
+        --b1: #252629;
+        --b2: #2e3038;
+        --b3: #3a3c46;
+        --gold: #e8b84b;
+        --gold2: #c99a2e;
+        --red: #e11d2e;
+        --red2: #ff4d5e;
+        --teal: #00d4aa;
+        --blue: #4a9eff;
+        --purple: #a855f7;
+        --green: #22c55e;
+        --amber: #f59e0b;
+        --orange: #f97316;
+        --txt: #eeeef0;
+        --sub: #888a95;
+        --dim: #3a3c46;
+        --nav-w: 230px;
+        --top-h: 52px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        background: var(--bg);
+        color: var(--txt);
+        font-family: "Epilogue", sans-serif;
+        font-size: 13px;
+      }
+
+      /* scrollbar */
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--b2);
+        border-radius: 2px;
+      }
+
+      /* ── LOGIN ────────────────────────── */
+      #login-screen {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .login-card {
+        background: var(--s1);
+        border: 1px solid var(--b2);
+        border-radius: 16px;
+        padding: 40px;
+        width: 380px;
+        text-align: center;
+      }
+      .login-logo {
+        font-family: "Syne", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--gold), #fff8e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
+      }
+      .login-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--dim);
+        margin-bottom: 32px;
+      }
+      .login-users {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .login-user-btn {
+        background: var(--s2);
+        border: 1px solid var(--b2);
+        border-radius: 10px;
+        padding: 14px 18px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .login-user-btn:hover {
+        border-color: var(--gold);
+        background: rgba(232, 184, 75, 0.05);
+      }
+      .login-user-btn.selected {
+        border-color: var(--gold);
+        background: rgba(232, 184, 75, 0.08);
+      }
+      .login-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--gold), var(--gold2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        color: #000;
+        flex-shrink: 0;
+      }
+      .login-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .login-role {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+      .pin-section {
+        display: none;
+        margin-top: 16px;
+      }
+      .pin-section.show {
+        display: block;
+      }
+      .pin-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--sub);
+        margin-bottom: 8px;
+      }
+      .pin-input {
+        width: 100%;
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        color: var(--txt);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.2rem;
+        letter-spacing: 0.3em;
+        text-align: center;
+        outline: none;
+      }
+      .pin-input:focus {
+        border-color: var(--gold);
+      }
+      .pin-error {
+        color: var(--red);
+        font-size: 11px;
+        margin-top: 6px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .login-enter-btn {
+        width: 100%;
+        margin-top: 12px;
+        padding: 11px;
+        background: var(--gold);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 13px;
+        cursor: pointer;
+        transition: filter 0.15s;
+      }
+      .login-enter-btn:hover {
+        filter: brightness(1.1);
+      }
+
+      /* ── APP LAYOUT ──────────────────── */
+      .app {
+        display: grid;
+        grid-template-rows: var(--top-h) 1fr;
+        grid-template-columns: var(--nav-w) 1fr;
+        height: 100vh;
+        display: none;
+      }
+      .app.show {
+        display: grid;
+      }
+
+      /* ── TOPBAR ──────────────────────── */
+      .topbar {
+        grid-column: 1/-1;
+        background: var(--s1);
+        border-bottom: 1px solid var(--b1);
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        gap: 12px;
+        z-index: 50;
+      }
+      .top-logo {
+        font-family: "Syne", sans-serif;
+        font-size: 1rem;
+        font-weight: 800;
+        background: linear-gradient(120deg, var(--gold), #fff8e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
+      }
+      .top-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--b1);
+      }
+      .top-search {
+        flex: 1;
+        max-width: 280px;
+        background: var(--s3);
+        border: 1px solid var(--b1);
+        color: var(--txt);
+        padding: 6px 12px 6px 30px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-family: "Epilogue", sans-serif;
+        outline: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%233a3c46' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 10px center;
+      }
+      .top-search:focus {
+        border-color: var(--gold);
+      }
+      .top-search::placeholder {
+        color: var(--dim);
+      }
+      .top-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-left: auto;
+      }
+      .top-user {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--s3);
+        border: 1px solid var(--b1);
+        border-radius: 8px;
+        padding: 5px 10px;
+      }
+      .top-user-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 11px;
+        color: var(--gold);
+      }
+      .top-user-role {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        color: var(--sub);
+      }
+      .btn {
+        font-family: "Syne", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 7px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .btn-gold {
+        background: var(--gold);
+        color: #000;
+      }
+      .btn-gold:hover {
+        filter: brightness(1.1);
+      }
+      .btn-ghost {
+        background: var(--s3);
+        color: var(--txt);
+        border: 1px solid var(--b2);
+      }
+      .btn-ghost:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+      .btn-red {
+        background: rgba(225, 29, 46, 0.1);
+        color: var(--red2);
+        border: 1px solid rgba(225, 29, 46, 0.2);
+      }
+      .btn-red:hover {
+        background: rgba(225, 29, 46, 0.2);
+      }
+      .btn-sm {
+        padding: 4px 10px;
+        font-size: 10px;
+      }
+      .btn-logout {
+        background: none;
+        border: none;
+        color: var(--sub);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        cursor: pointer;
+      }
+      .btn-logout:hover {
+        color: var(--red2);
+      }
+
+      /* ── SIDEBAR ─────────────────────── */
+      .sidebar {
+        background: var(--s1);
+        border-right: 1px solid var(--b1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 0;
+      }
+      .nav-sec {
+        padding: 10px 14px 3px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        color: var(--dim);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 14px;
+        width: 100%;
+        background: none;
+        border: none;
+        color: var(--sub);
+        font-family: "Epilogue", sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        cursor: pointer;
+        transition: all 0.12s;
+        border-left: 2px solid transparent;
+        text-align: left;
+      }
+      .nav-item:hover {
+        color: var(--txt);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .nav-item.active {
+        color: var(--gold);
+        background: rgba(232, 184, 75, 0.05);
+        border-left-color: var(--gold);
+      }
+      .nav-icon {
+        font-size: 13px;
+        width: 15px;
+        flex-shrink: 0;
+      }
+      .nav-bdg {
+        margin-left: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: 10px;
+        background: var(--s3);
+        color: var(--sub);
+      }
+      .nav-item.active .nav-bdg {
+        background: rgba(232, 184, 75, 0.12);
+        color: var(--gold);
+      }
+      .sb-money {
+        margin: 10px 12px 12px;
+        background: linear-gradient(
+          135deg,
+          rgba(232, 184, 75, 0.06),
+          rgba(232, 184, 75, 0.02)
+        );
+        border: 1px solid rgba(232, 184, 75, 0.12);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .sb-money-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 3px;
+      }
+      .sb-money-num {
+        font-family: "Syne", sans-serif;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--gold);
+        line-height: 1;
+      }
+      .sb-money-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        margin-top: 3px;
+      }
+      .sb-bar {
+        height: 3px;
+        background: var(--s4);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+      .sb-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--teal));
+        border-radius: 2px;
+        transition: width 0.5s ease;
+      }
+
+      /* ── MAIN ────────────────────────── */
+      .main {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .pages {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+      }
+      .page {
+        position: absolute;
+        inset: 0;
+        display: none;
+        overflow-y: auto;
+        animation: pgIn 0.2s ease;
+      }
+      .page.active {
+        display: flex;
+        flex-direction: column;
+      }
+      @keyframes pgIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .ph {
+        padding: 18px 22px 14px;
+        flex-shrink: 0;
+        background: var(--s1);
+        border-bottom: 1px solid var(--b1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .ph-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .ph-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        margin-top: 2px;
+      }
+      .ph-actions {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .pb {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px 22px;
+      }
+
+      /* ── STATS ───────────────────────── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 10px;
+        padding: 14px 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+      .stat:nth-child(1)::before {
+        background: linear-gradient(90deg, var(--gold), transparent);
+      }
+      .stat:nth-child(2)::before {
+        background: linear-gradient(90deg, var(--green), transparent);
+      }
+      .stat:nth-child(3)::before {
+        background: linear-gradient(90deg, var(--red), transparent);
+      }
+      .stat:nth-child(4)::before {
+        background: linear-gradient(90deg, var(--blue), transparent);
+      }
+      .stat:nth-child(5)::before {
+        background: linear-gradient(90deg, var(--purple), transparent);
+      }
+      .stat:nth-child(6)::before {
+        background: linear-gradient(90deg, var(--teal), transparent);
+      }
+      .stat-n {
+        font-family: "Syne", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 3px;
+      }
+      .stat-l {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      /* ── MONEY BAR ───────────────────── */
+      .money-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .money-card {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .money-card.red-glow {
+        border-color: rgba(225, 29, 46, 0.2);
+        background: rgba(225, 29, 46, 0.03);
+      }
+      .money-card.gold-glow {
+        border-color: rgba(232, 184, 75, 0.15);
+        background: rgba(232, 184, 75, 0.03);
+      }
+      .money-card.green-glow {
+        border-color: rgba(34, 197, 94, 0.15);
+        background: rgba(34, 197, 94, 0.03);
+      }
+      .money-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 5px;
+      }
+      .money-num {
+        font-family: "Syne", sans-serif;
+        font-size: 1.4rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .money-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--sub);
+        margin-top: 4px;
+      }
+
+      /* ── TABLE ───────────────────────── */
+      .tbl-bar {
+        padding: 10px 22px;
+        background: var(--s2);
+        border-bottom: 1px solid var(--b1);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .tbl-bar input,
+      .tbl-bar select {
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        color: var(--txt);
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-family: "Epilogue", sans-serif;
+        outline: none;
+      }
+      .tbl-bar input:focus,
+      .tbl-bar select:focus {
+        border-color: var(--gold);
+      }
+      .tbl-bar select option {
+        background: #111;
+      }
+      .tbl-right {
+        margin-left: auto;
+        display: flex;
+        gap: 6px;
+      }
+      .tbl-wrap {
+        flex: 1;
+        overflow: auto;
+        min-height: 0;
+      }
+      table {
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 12px;
+        width: max-content;
+        min-width: 100%;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--s2);
+        transform: translateZ(0);
+      }
+      th {
+        padding: 8px 12px;
+        text-align: left;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        background: var(--s2);
+        border-bottom: 1px solid var(--b2);
+        border-right: 1px solid var(--b1);
+        white-space: nowrap;
+        cursor: pointer;
+      }
+      th:hover {
+        color: var(--gold);
+      }
+      th:last-child {
+        border-right: none;
+      }
+      td {
+        padding: 8px 12px;
+        border-right: 1px solid var(--b1);
+        border-bottom: 1px solid var(--b1);
+        white-space: nowrap;
+        background: var(--s1);
+        vertical-align: middle;
+      }
+      td:last-child {
+        border-right: none;
+      }
+      tbody tr:hover td {
+        background: var(--s2);
+      }
+      .tbl-pager {
+        flex-shrink: 0;
+        padding: 7px 22px;
+        background: var(--s1);
+        border-top: 1px solid var(--b1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .pg-info {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--sub);
+      }
+
+      /* ── BADGES ──────────────────────── */
+      .bdg {
+        display: inline-flex;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .bdg-interested {
+        background: rgba(74, 158, 255, 0.12);
+        color: #4a9eff;
+      }
+      .bdg-closed {
+        background: rgba(34, 197, 94, 0.12);
+        color: #4ade80;
+      }
+      .bdg-not {
+        background: rgba(225, 29, 46, 0.12);
+        color: #f87171;
+      }
+      .bdg-hot {
+        background: rgba(239, 68, 68, 0.12);
+        color: #f87171;
+      }
+      .bdg-warm {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+      }
+      .bdg-cold {
+        background: rgba(59, 130, 246, 0.12);
+        color: #60a5fa;
+      }
+      .bdg-pending {
+        background: rgba(107, 114, 128, 0.12);
+        color: #9ca3af;
+      }
+      .bdg-advance {
+        background: rgba(59, 130, 246, 0.12);
+        color: #60a5fa;
+      }
+      .bdg-paid {
+        background: rgba(34, 197, 94, 0.12);
+        color: #4ade80;
+      }
+      .bdg-overdue {
+        background: rgba(239, 68, 68, 0.12);
+        color: #f87171;
+      }
+      .sel-bdg {
+        border: none;
+        border-radius: 20px;
+        padding: 2px 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      /* ── INLINE INPUTS ───────────────── */
+      .il-input {
+        background: transparent;
+        border: none;
+        color: var(--txt);
+        font-size: 12px;
+        font-family: "Epilogue", sans-serif;
+        outline: none;
+        width: 100%;
+        min-width: 80px;
+      }
+      .il-input:focus {
+        border-bottom: 1px solid var(--gold);
+      }
+      .il-input::placeholder {
+        color: var(--dim);
+      }
+      .il-date {
+        background: transparent;
+        border: none;
+        color: var(--sub);
+        font-size: 11px;
+        font-family: "JetBrains Mono", monospace;
+        outline: none;
+        width: 110px;
+      }
+      .il-date:focus {
+        color: var(--txt);
+        border-bottom: 1px solid var(--gold);
+      }
+      .il-money {
+        background: transparent;
+        border: none;
+        color: var(--green);
+        font-size: 12px;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        outline: none;
+        width: 80px;
+      }
+      .il-money:focus {
+        border-bottom: 1px solid var(--gold);
+      }
+      .il-money::placeholder {
+        color: var(--dim);
+      }
+
+      /* table action btns */
+      .tbl-wa {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        background: rgba(37, 211, 102, 0.1);
+        color: #25d366;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+      }
+      .tbl-wa:hover {
+        background: rgba(37, 211, 102, 0.2);
+      }
+      .tbl-del {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        background: rgba(225, 29, 46, 0.1);
+        color: var(--red2);
+        border: none;
+        cursor: pointer;
+        margin-left: 4px;
+      }
+      .tbl-del:hover {
+        background: rgba(225, 29, 46, 0.2);
+      }
+
+      /* ── KANBAN ──────────────────────── */
+      .kanban-wrap {
+        display: flex;
+        gap: 12px;
+        padding: 18px 22px;
+        overflow-x: auto;
+        flex: 1;
+        align-items: flex-start;
+      }
+      .kb-col {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 10px;
+        min-width: 220px;
+        max-width: 220px;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - var(--top-h) - 90px);
+      }
+      .kb-col-head {
+        padding: 11px 13px;
+        border-bottom: 1px solid var(--b1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .kb-col-title {
+        font-family: "Syne", sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .kb-col-cnt {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--sub);
+      }
+      .kb-cards {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .kb-card {
+        background: var(--s1);
+        border: 1px solid var(--b1);
+        border-radius: 7px;
+        padding: 10px;
+        cursor: grab;
+        transition: all 0.12s;
+        border-left: 3px solid transparent;
+      }
+      .kb-card:hover {
+        border-color: var(--b2);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      }
+      .kb-card.dragging {
+        opacity: 0.35;
+      }
+      .kb-col.drag-over {
+        background: rgba(232, 184, 75, 0.03);
+        border-color: rgba(232, 184, 75, 0.25);
+      }
+      .kb-card-name {
+        font-weight: 600;
+        font-size: 11px;
+        margin-bottom: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .kb-card-meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--sub);
+        margin-bottom: 6px;
+      }
+      .kb-card-tags {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .kb-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+      .kb-actions {
+        display: flex;
+        gap: 5px;
+      }
+      .kb-wa {
+        background: rgba(37, 211, 102, 0.1);
+        color: #25d366;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 3px 7px;
+        border-radius: 4px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+      }
+      .kb-empty {
+        padding: 20px;
+        text-align: center;
+        color: var(--dim);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+      }
+
+      /* ── MODAL ───────────────────────── */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(6px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--s1);
+        border: 1px solid var(--b2);
+        border-radius: 14px;
+        width: 600px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalIn 0.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      .modal::-webkit-scrollbar {
+        width: 0;
+      }
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: scale(0.92);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .modal-head {
+        padding: 20px 22px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .modal-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .modal-close {
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        color: var(--sub);
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-close:hover {
+        color: var(--red);
+        border-color: var(--red);
+      }
+      .modal-body {
+        padding: 0 22px 22px;
+      }
+      .form-sec {
+        margin-bottom: 18px;
+      }
+      .form-sec-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(232, 184, 75, 0.15);
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .form-full {
+        grid-column: 1/-1;
+      }
+      .fgrp {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .fgrp label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .fgrp input,
+      .fgrp select,
+      .fgrp textarea {
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        color: var(--txt);
+        padding: 8px 10px;
+        border-radius: 7px;
+        font-family: "Epilogue", sans-serif;
+        font-size: 12px;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.12s;
+      }
+      .fgrp input:focus,
+      .fgrp select:focus,
+      .fgrp textarea:focus {
+        border-color: var(--gold);
+      }
+      .fgrp select option {
+        background: #111;
+      }
+      .fgrp textarea {
+        resize: vertical;
+        min-height: 65px;
+      }
+      .fgrp input[readonly] {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .form-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 16px;
+      }
+      .balance-display {
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        border-radius: 7px;
+        padding: 8px 10px;
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .balance-display.red {
+        color: var(--red2);
+        border-color: rgba(225, 29, 46, 0.3);
+      }
+      .balance-display.green {
+        color: var(--green);
+      }
+      .cond-field {
+        display: none;
+      }
+      .cond-field.show {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      /* ── TOAST ───────────────────────── */
+      .toast-area {
+        position: fixed;
+        bottom: 18px;
+        right: 18px;
+        z-index: 300;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        pointer-events: none;
+      }
+      .toast {
+        background: var(--s2);
+        border: 1px solid var(--b2);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        pointer-events: all;
+        min-width: 200px;
+        animation: toastIn 0.25s cubic-bezier(0.34, 1.2, 0.64, 1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateX(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .toast-success {
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      .toast-error {
+        border-color: rgba(225, 29, 46, 0.3);
+      }
+      .toast-info {
+        border-color: rgba(232, 184, 75, 0.2);
+      }
+
+      /* ── ACTIVITY ────────────────────── */
+      .act-item {
+        display: flex;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--b1);
+        align-items: flex-start;
+      }
+      .act-item:last-child {
+        border-bottom: none;
+      }
+      .act-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .act-txt {
+        font-size: 12px;
+      }
+      .act-time {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        margin-top: 2px;
+      }
+
+      /* ── SCRIPTS ─────────────────────── */
+      .scripts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .sc-card {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .sc-head {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--b1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .sc-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 3px;
+      }
+      .sc-body {
+        padding: 13px 14px;
+        font-size: 12px;
+        line-height: 1.75;
+        color: var(--sub);
+      }
+      .sc-body strong {
+        color: var(--txt);
+      }
+
+      /* ── MISC ────────────────────────── */
+      .card {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .card-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .empty {
+        padding: 40px;
+        text-align: center;
+        color: var(--dim);
+      }
+      .empty-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+        opacity: 0.4;
+      }
+      .empty-txt {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+      }
+      .row-num {
+        color: var(--dim);
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        text-align: center;
+        width: 30px;
+      }
+      .biz-name-cell {
+        font-weight: 600;
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+      }
+      .biz-name-cell:hover {
+        color: var(--gold);
+      }
+
+      /* ── LOCATIONS PAGE ──────────────────── */
+      .loc-wrap {
+        padding: 20px 22px;
+        flex: 1;
+        overflow-y: auto;
+      }
+      .loc-dropdowns {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        align-items: flex-end;
+      }
+      .loc-select-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .loc-select-wrap label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .loc-select {
+        background: var(--s3);
+        border: 1px solid var(--b2);
+        color: var(--txt);
+        padding: 8px 12px;
+        border-radius: 7px;
+        font-family: "Epilogue", sans-serif;
+        font-size: 12px;
+        outline: none;
+        min-width: 150px;
+        cursor: pointer;
+      }
+      .loc-select:focus {
+        border-color: var(--gold);
+      }
+      .loc-select option {
+        background: #111;
+      }
+      .loc-breadcrumb {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--sub);
+        margin-bottom: 14px;
+        padding: 8px 12px;
+        background: var(--s2);
+        border-radius: 7px;
+        border: 1px solid var(--b1);
+      }
+      .loc-breadcrumb span {
+        color: var(--gold);
+      }
+      .loc-stats {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .loc-stat {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 8px;
+        padding: 10px 14px;
+        flex: 1;
+        min-width: 120px;
+      }
+      .loc-stat-n {
+        font-family: "Syne", sans-serif;
+        font-size: 1.3rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 2px;
+      }
+      .loc-stat-l {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .loc-leads {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .loc-lead-card {
+        background: var(--s2);
+        border: 1px solid var(--b1);
+        border-radius: 8px;
+        padding: 12px 16px;
+        display: grid;
+        grid-template-columns: 1fr auto auto auto;
+        gap: 10px;
+        align-items: center;
+        transition: border-color 0.15s;
+      }
+      .loc-lead-card:hover {
+        border-color: var(--b2);
+      }
+      .loc-lead-name {
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .loc-lead-name:hover {
+        color: var(--gold);
+      }
+      .loc-lead-meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+      .fu-timer {
+        display: inline-flex;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .fu-today {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        animation: fup 1.5s infinite;
+      }
+      .fu-overdue {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+      }
+      .fu-soon {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fbbf24;
+      }
+      .fu-ok {
+        background: rgba(107, 114, 128, 0.1);
+        color: #9ca3af;
+      }
+      @keyframes fup {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div id="login-screen">
+      <div class="login-card">
+        <div class="login-logo">🐋 DopeOrca CRM</div>
+        <div class="login-sub">// Web Agency · Mulund Mumbai</div>
+        <div class="login-users">
+          <button class="login-user-btn" onclick="selectUser('shahid', this)">
+            <div class="login-avatar">S</div>
+            <div>
+              <div class="login-name">Shahid Khan</div>
+              <div class="login-role">Enter PIN to continue</div>
+            </div>
+          </button>
+          <button class="login-user-btn" onclick="selectUser('sufi', this)">
+            <div
+              class="login-avatar"
+              style="background: linear-gradient(135deg, var(--teal), #008f72)"
+            >
+              F
+            </div>
+            <div>
+              <div class="login-name">Sufi Khan</div>
+              <div class="login-role">Enter PIN to continue</div>
+            </div>
+          </button>
+        </div>
+        <div class="pin-section" id="pin-section">
+          <div class="pin-label">Enter 4-digit PIN</div>
+          <input
+            class="pin-input"
+            id="pin-input"
+            type="password"
+            maxlength="4"
+            inputmode="numeric"
+            placeholder="••••"
+            onkeyup="if (this.value.length === 4) doLogin();"
+          />
+          <div class="pin-error" id="pin-error"></div>
+          <button class="login-enter-btn" onclick="doLogin()">Enter →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app" id="app">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="top-logo">🐋 DopeOrca</div>
+        <div class="top-sep"></div>
+        <input
+          class="top-search"
+          id="global-search"
+          placeholder="Search leads..."
+          oninput="globalSearch(this.value)"
+        />
+        <div class="top-actions">
+          <div class="top-user">
+            <div>
+              <div class="top-user-name" id="top-user-name">—</div>
+              <div class="top-user-role" id="top-user-role">—</div>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+            ⬇ CSV
+          </button>
+          <button class="btn btn-gold" onclick="openAddLead()">+ Lead</button>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <nav class="nav">
+          <div class="nav-sec">Overview</div>
+          <button class="nav-item active" onclick="nav(this, 'dash')">
+            <span class="nav-icon">⚡</span>Dashboard
+          </button>
+          <div class="nav-sec">Leads</div>
+          <button class="nav-item" onclick="nav(this, 'table')">
+            <span class="nav-icon">📋</span>Table View<span
+              class="nav-bdg"
+              id="nb-leads"
+              >0</span
+            >
+          </button>
+          <button class="nav-item" onclick="nav(this, 'pipeline')">
+            <span class="nav-icon">🗂</span>Pipeline
+          </button>
+          <button class="nav-item" onclick="nav(this, 'locations')">
+            <span class="nav-icon">🌍</span>Locations
+          </button>
+          <div class="nav-sec">Finance</div>
+          <button class="nav-item" onclick="nav(this, 'money')">
+            <span class="nav-icon">💰</span>Money Tracker
+          </button>
+          <div class="nav-sec">Tools</div>
+          <button class="nav-item" onclick="nav(this, 'scripts')">
+            <span class="nav-icon">📝</span>Scripts
+          </button>
+          <button class="nav-item" onclick="nav(this, 'activity')">
+            <span class="nav-icon">📡</span>Activity<span
+              class="nav-bdg"
+              id="nb-act"
+              >0</span
+            >
+          </button>
+        </nav>
+        <div
+          style="
+            padding: 8px 12px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--b1);
+          "
+        >
+          <div>
+            <div
+              id="sb-user-name"
+              style="
+                font-family: Syne, sans-serif;
+                font-weight: 700;
+                font-size: 12px;
+                color: var(--txt);
+              "
+            >
+              —
+            </div>
+            <div
+              id="sb-user-role"
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 9px;
+                color: var(--sub);
+              "
+            >
+              —
+            </div>
+          </div>
+          <button class="btn btn-red btn-sm" onclick="logout()">Logout</button>
+        </div>
+        <div class="sb-money">
+          <div class="sb-money-label">Total Advance Received</div>
+          <div class="sb-money-num" id="sb-total">₹0</div>
+          <div class="sb-money-sub">
+            Goal: ₹50,000 · <span id="sb-pct">0%</span>
+          </div>
+          <div class="sb-bar">
+            <div class="sb-bar-fill" id="sb-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <div class="pages">
+          <!-- DASHBOARD -->
+          <div id="page-dash" class="page active">
+            <div class="ph">
+              <div>
+                <div class="ph-title">Dashboard ⚡</div>
+                <div class="ph-sub">// Live overview · DopeOrca</div>
+              </div>
+              <div class="ph-actions">
+                <button class="btn btn-ghost btn-sm" onclick="loadAll()">
+                  ↻ Refresh
+                </button>
+                <button class="btn btn-gold" onclick="openAddLead()">
+                  + Add Lead
+                </button>
+              </div>
+            </div>
+            <div class="pb">
+              <div class="stats-grid" id="dash-stats"></div>
+              <div class="money-bar" id="dash-money"></div>
+              <div class="two">
+                <div class="card">
+                  <div class="card-title">📡 Recent Activity</div>
+                  <div id="dash-activity"></div>
+                </div>
+                <div>
+                  <div class="card" style="margin-bottom: 12px">
+                    <div class="card-title">✅ Today's Checklist</div>
+                    <div id="dash-checklist"></div>
+                  </div>
+                  <div class="card">
+                    <div class="card-title">🔥 Hot Leads</div>
+                    <div id="dash-hot"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div id="page-table" class="page">
+            <div class="tbl-bar">
+              <input
+                id="tbl-search"
+                placeholder="Search..."
+                oninput="applyFilters()"
+              />
+              <select id="f-status" onchange="applyFilters()">
+                <option value="">All Status</option>
+                <option>Interested</option>
+                <option>Deal Closed</option>
+                <option>Not Interested</option>
+              </select>
+              <select id="f-priority" onchange="applyFilters()">
+                <option value="">All Priority</option>
+                <option>Hot</option>
+                <option>Warm</option>
+                <option>Cold</option>
+              </select>
+              <select id="f-niche" onchange="applyFilters()">
+                <option value="">All Niches</option>
+                <option>Coaching Center</option>
+                <option>Gym</option>
+                <option>Clinic</option>
+                <option>Restaurant</option>
+                <option>Salon</option>
+                <option>Real Estate</option>
+                <option>Other</option>
+              </select>
+              <select id="f-payment" onchange="applyFilters()">
+                <option value="">All Payment</option>
+                <option>Pending</option>
+                <option>Advance Paid</option>
+                <option>Full Paid</option>
+              </select>
+              <div class="tbl-right">
+                <span class="pg-info" id="count-lbl"></span>
+                <button class="btn btn-ghost btn-sm" onclick="clearFilters()">
+                  Clear
+                </button>
+              </div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="row-num">#</th>
+                    <th>Business</th>
+                    <th>Niche</th>
+                    <th>Area</th>
+                    <th>Phone</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Quoted ₹</th>
+                    <th>Advance ₹</th>
+                    <th>Balance ₹</th>
+                    <th>Payment</th>
+                    <th>Follow Up</th>
+                    <th>Close Date</th>
+                    <th>Delivery</th>
+                    <th>Web Status</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+              </table>
+              <div class="empty" id="tbl-empty" style="display: none">
+                <div class="empty-icon">📭</div>
+                <div class="empty-txt">No leads found</div>
+              </div>
+            </div>
+            <div class="tbl-pager">
+              <button
+                class="btn btn-ghost btn-sm"
+                id="pg-prev"
+                onclick="go(-1)"
+              >
+                ← Prev
+              </button>
+              <span class="pg-info" id="pg-info"></span>
+              <button class="btn btn-ghost btn-sm" id="pg-next" onclick="go(1)">
+                Next →
+              </button>
+              <span
+                style="
+                  margin-left: auto;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 9px;
+                  color: var(--dim);
+                "
+                >Auto-saves to Supabase</span
+              >
+            </div>
+          </div>
+
+          <!-- PIPELINE -->
+          <div id="page-pipeline" class="page" style="flex-direction: column">
+            <div class="ph">
+              <div>
+                <div class="ph-title">Pipeline 🗂</div>
+                <div class="ph-sub">// Drag cards between stages</div>
+              </div>
+            </div>
+            <div class="kanban-wrap" id="kanban-wrap"></div>
+          </div>
+
+          <!-- MONEY -->
+          <div id="page-money" class="page">
+            <div class="ph">
+              <div>
+                <div class="ph-title">Money Tracker 💰</div>
+                <div class="ph-sub">// Full financial overview</div>
+              </div>
+            </div>
+            <div class="pb">
+              <div id="money-overview"></div>
+            </div>
+          </div>
+
+          <!-- SCRIPTS -->
+          <div id="page-scripts" class="page">
+            <div class="ph">
+              <div class="ph-title">Scripts Library 📝</div>
+              <div class="ph-sub">// Click 📋 to copy</div>
+            </div>
+            <div class="pb">
+              <div class="scripts-grid" id="scripts-grid"></div>
+            </div>
+          </div>
+
+          <!-- ACTIVITY -->
+          <div id="page-activity" class="page">
+            <div class="ph">
+              <div class="ph-title">Activity Log 📡</div>
+              <button
+                class="btn btn-red btn-sm"
+                id="clear-act-btn"
+                onclick="clearActivity()"
+              >
+                Clear
+              </button>
+            </div>
+            <div class="pb">
+              <div class="card"><div id="activity-full"></div></div>
+            </div>
+          </div>
+
+          <!-- LOCATIONS -->
+          <div id="page-locations" class="page">
+            <div class="ph">
+              <div>
+                <div class="ph-title">Locations 🌍</div>
+                <div class="ph-sub">
+                  // Browse leads by Country → City → Area
+                </div>
+              </div>
+              <div class="ph-actions">
+                <button
+                  class="btn btn-gold"
+                  id="loc-add-btn"
+                  onclick="locAddLead()"
+                  style="display: none"
+                >
+                  + Add Lead Here
+                </button>
+              </div>
+            </div>
+            <div class="loc-wrap">
+              <div class="loc-dropdowns">
+                <div class="loc-select-wrap">
+                  <label>Country</label>
+                  <select
+                    class="loc-select"
+                    id="loc-country"
+                    onchange="locSelectCountry()"
+                  >
+                    <option value="">— Select Country —</option>
+                  </select>
+                </div>
+                <div class="loc-select-wrap">
+                  <label>City</label>
+                  <select
+                    class="loc-select"
+                    id="loc-city"
+                    onchange="locSelectCity()"
+                    disabled
+                  >
+                    <option value="">— Select City —</option>
+                  </select>
+                </div>
+                <div class="loc-select-wrap">
+                  <label>Area</label>
+                  <select
+                    class="loc-select"
+                    id="loc-area"
+                    onchange="locSelectArea()"
+                    disabled
+                  >
+                    <option value="">— All Areas —</option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="loc-breadcrumb"
+                id="loc-breadcrumb"
+                style="display: none"
+              ></div>
+              <div class="loc-stats" id="loc-stats" style="display: none"></div>
+              <div class="loc-leads" id="loc-leads"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ADD LEAD MODAL -->
+    <div class="overlay" id="modal-lead">
+      <div class="modal" style="width: 640px">
+        <div class="modal-head">
+          <div class="modal-title" id="lead-modal-title">+ Add New Lead</div>
+          <button class="modal-close" onclick="closeModal('modal-lead')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- BASIC INFO -->
+          <div class="form-sec">
+            <div class="form-sec-title">Basic Info</div>
+            <div class="form-grid">
+              <div class="fgrp form-full">
+                <label>Business Name *</label
+                ><input id="f-bname" placeholder="e.g. Pratik Sir's Academy" />
+              </div>
+              <div class="fgrp">
+                <label>Niche</label>
+                <select id="f-fniche">
+                  <option>Coaching Center</option>
+                  <option>Gym</option>
+                  <option>Clinic</option>
+                  <option>Restaurant</option>
+                  <option>Salon</option>
+                  <option>Real Estate</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>Source</label>
+                <select id="f-source">
+                  <option>Google Maps</option>
+                  <option>Cold Call</option>
+                  <option>Instagram</option>
+                  <option>LinkedIn</option>
+                  <option>Referral</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>Country</label>
+                <select
+                  id="f-country"
+                  class="loc-select"
+                  style="width: 100%; border-radius: 7px; padding: 8px 10px"
+                >
+                  <option value="">— Select —</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>City</label>
+                <select
+                  id="f-city-sel"
+                  class="loc-select"
+                  style="width: 100%; border-radius: 7px; padding: 8px 10px"
+                >
+                  <option value="">— Select City —</option>
+                </select>
+                <input id="f-city" type="hidden" value="Mumbai" />
+              </div>
+              <div class="fgrp">
+                <label>Area</label>
+                <select
+                  id="f-area-sel"
+                  class="loc-select"
+                  style="width: 100%; border-radius: 7px; padding: 8px 10px"
+                >
+                  <option value="">— Select Area —</option>
+                </select>
+                <input id="f-area" type="hidden" value="" />
+              </div>
+              <div class="fgrp">
+                <label>Website Status</label>
+                <select id="f-webstatus">
+                  <option>No Website</option>
+                  <option>Bad Website</option>
+                  <option>Built By Us</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>Priority</label>
+                <select id="f-priority2">
+                  <option>Warm</option>
+                  <option>Hot</option>
+                  <option>Cold</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!-- CONTACT -->
+          <div class="form-sec">
+            <div class="form-sec-title">Contact Info</div>
+            <div class="form-grid">
+              <div class="fgrp">
+                <label>Phone</label
+                ><input
+                  id="f-phone"
+                  placeholder="98765 43210"
+                  oninput="syncWA()"
+                />
+              </div>
+              <div class="fgrp">
+                <label
+                  >WhatsApp
+                  <label style="font-size: 9px; color: var(--sub)"
+                    ><input type="checkbox" id="wa-same" onchange="syncWA()" />
+                    Same as phone</label
+                  ></label
+                ><input id="f-wa" placeholder="98765 43210" />
+              </div>
+            </div>
+          </div>
+          <!-- DEAL INFO -->
+          <div class="form-sec">
+            <div class="form-sec-title">Deal Info</div>
+            <div class="form-grid">
+              <div class="fgrp">
+                <label>Lead Status</label>
+                <select id="f-lstatus" onchange="toggleCondFields()">
+                  <option>Interested</option>
+                  <option>Deal Closed</option>
+                  <option>Not Interested</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>Quoted Price (₹)</label
+                ><input
+                  id="f-quoted"
+                  type="number"
+                  placeholder="12000"
+                  oninput="calcBalance()"
+                />
+              </div>
+              <div class="fgrp">
+                <label>Advance Received (₹)</label
+                ><input
+                  id="f-advance"
+                  type="number"
+                  placeholder="6000"
+                  oninput="calcBalance()"
+                />
+              </div>
+              <div class="fgrp">
+                <label>Balance Pending (₹) — Auto</label>
+                <div class="balance-display" id="f-balance-display">₹0</div>
+              </div>
+              <div class="fgrp form-full">
+                <label>Payment Status — Auto</label>
+                <div
+                  class="balance-display"
+                  id="f-paystatus-display"
+                  style="font-size: 11px"
+                >
+                  Pending
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- TIMELINE -->
+          <div class="form-sec">
+            <div class="form-sec-title">Timeline</div>
+            <div class="form-grid">
+              <div class="fgrp">
+                <label>Meeting Date</label><input id="f-meeting" type="date" />
+              </div>
+              <div class="fgrp">
+                <label>Follow Up Date</label
+                ><input id="f-followup" type="date" />
+              </div>
+              <div class="fgrp cond-field" id="cf-closedate">
+                <label>Deal Close Date</label
+                ><input id="f-closedate" type="date" />
+              </div>
+              <div class="fgrp cond-field" id="cf-deadline">
+                <label>Delivery Deadline</label
+                ><input id="f-deadline" type="date" />
+              </div>
+            </div>
+          </div>
+          <!-- WEBSITE INFO -->
+          <div class="form-sec">
+            <div class="form-sec-title">Website Info</div>
+            <div class="form-grid">
+              <div class="fgrp">
+                <label>Delivery Status</label>
+                <select id="f-delivstatus" onchange="toggleLiveUrl()">
+                  <option>Not Started</option>
+                  <option>In Progress</option>
+                  <option>Client Review</option>
+                  <option>Delivered</option>
+                </select>
+              </div>
+              <div class="fgrp">
+                <label>Revision Round</label
+                ><input id="f-revision" type="number" value="0" min="0" />
+              </div>
+              <div class="fgrp cond-field form-full" id="cf-liveurl">
+                <label>Live URL</label
+                ><input id="f-liveurl" placeholder="https://..." />
+              </div>
+            </div>
+          </div>
+          <!-- NOTES -->
+          <div class="form-sec">
+            <div class="form-sec-title">Notes</div>
+            <div class="fgrp">
+              <textarea
+                id="f-notes"
+                placeholder="Any observations, next steps..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-ghost" onclick="closeModal('modal-lead')">
+              Cancel
+            </button>
+            <button
+              class="btn btn-gold"
+              id="lead-submit-btn"
+              onclick="submitLead()"
+            >
+              Save Lead
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-area" id="toast-area"></div>
+
+    <script>
+      /* ═══ SUPABASE ═══════════════════════════════════ */
+      const SUPA_URL = "https://hirvhblqstltzyaethge.supabase.co";
+      const SUPA_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpcnZoYmxxc3RsdHp5YWV0aGdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMTcyNjgsImV4cCI6MjA5MjY5MzI2OH0.KLoSZGB80u74FTyp1_-apHvqOQSuJ2f44R3Va4GJcl0";
+      const { createClient } = window.supabase;
+      const db = createClient(SUPA_URL, SUPA_KEY, {
+        auth: { persistSession: false },
+      });
+
+      /* ═══ AUTH ═══════════════════════════════════════ */
+      const PINS = { shahid: "2537", sufi: "2980" };
+      const USERS = {
+        shahid: { name: "Shahid Khan", role: "Owner", isOwner: true },
+        sufi: { name: "Sufi Khan", role: "Sales Executive", isOwner: false },
+      };
+      let currentUser = null;
+      let selectedUserKey = null;
+
+      function selectUser(key, btn) {
+        selectedUserKey = key;
+        document
+          .querySelectorAll(".login-user-btn")
+          .forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        document.getElementById("pin-section").classList.add("show");
+        document.getElementById("pin-input").value = "";
+        document.getElementById("pin-error").textContent = "";
+        setTimeout(() => document.getElementById("pin-input").focus(), 100);
+      }
+
+      function doLogin() {
+        const pin = document.getElementById("pin-input").value;
+        if (!selectedUserKey) {
+          document.getElementById("pin-error").textContent =
+            "Select a user first";
+          return;
+        }
+        if (pin !== PINS[selectedUserKey]) {
+          document.getElementById("pin-error").textContent =
+            "Wrong PIN. Try again.";
+          document.getElementById("pin-input").value = "";
+          return;
+        }
+        currentUser = { key: selectedUserKey, ...USERS[selectedUserKey] };
+        localStorage.setItem("do_user", JSON.stringify(currentUser));
+        startApp();
+      }
+
+      function startApp() {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("app").classList.add("show");
+        document.getElementById("top-user-name").textContent = currentUser.name;
+        document.getElementById("top-user-role").textContent = currentUser.role;
+        const sn = document.getElementById("sb-user-name");
+        if (sn) sn.textContent = currentUser.name;
+        const sr = document.getElementById("sb-user-role");
+        if (sr) sr.textContent = currentUser.role;
+        loadAll();
+        setupRealtime();
+        renderScripts();
+        buildChecklist();
+        buildFormLocationDropdowns();
+        const cb = document.getElementById("clear-act-btn");
+        if (cb && !currentUser.isOwner) cb.style.display = "none";
+      }
+
+      function logout() {
+        document.getElementById("logout-overlay").classList.add("open");
+      }
+      function confirmLogout() {
+        localStorage.removeItem("do_user");
+        currentUser = null;
+        location.reload();
+      }
+      function cancelLogout() {
+        document.getElementById("logout-overlay").classList.remove("open");
+      }
+
+      // Auto-login from localStorage
+      window.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem("do_user");
+        if (saved) {
+          try {
+            currentUser = JSON.parse(saved);
+            startApp();
+          } catch {
+            localStorage.removeItem("do_user");
+          }
+        }
+      });
+
+      /* ═══ STATE ══════════════════════════════════════ */
+      let leads = [];
+      let filtered = [];
+      let activity = [];
+      let page = 0;
+      const PER = 25;
+      let sortCol = "created_at";
+      let sortDir = -1;
+      let editId = null;
+      let dragId = null;
+
+      /* ═══ SUPABASE FETCH ══════════════════════════════ */
+      async function fetchLeads() {
+        let q = db
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (!currentUser.isOwner) q = q.eq("owner", currentUser.name);
+        const { data, error } = await q;
+        if (error) {
+          toast("Failed to load leads: " + error.message, "error");
+          return;
+        }
+        leads = data || [];
+        applyFilters();
+        refreshAll();
+      }
+
+      async function fetchActivity() {
+        const { data } = await db
+          .from("activity")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50);
+        activity = data || [];
+        document.getElementById("nb-act").textContent = activity.length;
+        renderActivity();
+      }
+
+      async function loadAll() {
+        await fetchLeads();
+        await fetchActivity();
+      }
+
+      /* ═══ REALTIME ════════════════════════════════════ */
+      function setupRealtime() {
+        db.channel("leads-changes")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "leads" },
+            () => {
+              fetchLeads();
+            },
+          )
+          .subscribe();
+        db.channel("activity-changes")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "activity" },
+            () => {
+              fetchActivity();
+            },
+          )
+          .subscribe();
+      }
+
+      /* ═══ LOG ACTIVITY ════════════════════════════════ */
+      async function logAct(txt, color = "teal") {
+        await db
+          .from("activity")
+          .insert({ action: txt, owner: currentUser.name, color });
+      }
+
+      /* ═══ ADD / EDIT LEAD ═════════════════════════════ */
+      function openAddLead() {
+        editId = null;
+        document.getElementById("lead-modal-title").textContent =
+          "+ Add New Lead";
+        document.getElementById("lead-submit-btn").textContent = "Save Lead";
+        [
+          "f-bname",
+          "f-city",
+          "f-area",
+          "f-phone",
+          "f-wa",
+          "f-quoted",
+          "f-advance",
+          "f-notes",
+          "f-liveurl",
+        ].forEach(
+          (id) =>
+            (document.getElementById(id).value =
+              id === "f-city" ? "Mumbai" : ""),
+        );
+        document.getElementById("f-revision").value = "0";
+        document.getElementById("f-balance-display").textContent = "₹0";
+        document.getElementById("f-balance-display").className =
+          "balance-display";
+        document.getElementById("f-paystatus-display").textContent = "Pending";
+        document.getElementById("cf-closedate").classList.remove("show");
+        document.getElementById("cf-deadline").classList.remove("show");
+        document.getElementById("cf-liveurl").classList.remove("show");
+        document.getElementById("wa-same").checked = false;
+        openModal("modal-lead");
+      }
+
+      function openEditLead(id) {
+        const l = leads.find((x) => x.id === id);
+        if (!l) return;
+        editId = id;
+        document.getElementById("lead-modal-title").textContent = "Edit Lead";
+        document.getElementById("lead-submit-btn").textContent = "Update Lead";
+        document.getElementById("f-bname").value = l.business_name || "";
+        document.getElementById("f-fniche").value =
+          l.niche || "Coaching Center";
+        document.getElementById("f-source").value = l.source || "Google Maps";
+        document.getElementById("f-city").value = l.city || "Mumbai";
+        document.getElementById("f-area").value = l.area || "";
+        document.getElementById("f-webstatus").value =
+          l.website_status || "No Website";
+        document.getElementById("f-priority2").value = l.priority || "Warm";
+        document.getElementById("f-phone").value = l.phone || "";
+        document.getElementById("f-wa").value = l.whatsapp_number || "";
+        document.getElementById("f-lstatus").value =
+          l.lead_status || "Interested";
+        document.getElementById("f-quoted").value = l.quoted_price || "";
+        document.getElementById("f-advance").value = l.advance_received || "";
+        document.getElementById("f-meeting").value = l.meeting_date || "";
+        document.getElementById("f-followup").value = l.follow_up_date || "";
+        document.getElementById("f-closedate").value = l.deal_close_date || "";
+        document.getElementById("f-deadline").value = l.delivery_deadline || "";
+        document.getElementById("f-delivstatus").value =
+          l.website_delivery_status || "Not Started";
+        document.getElementById("f-revision").value = l.revision_round || 0;
+        document.getElementById("f-liveurl").value = l.live_url || "";
+        document.getElementById("f-notes").value = l.notes || "";
+        calcBalance();
+        toggleCondFields();
+        toggleLiveUrl();
+        openModal("modal-lead");
+      }
+
+      async function submitLead() {
+        const name = document.getElementById("f-bname").value.trim();
+        if (!name) {
+          toast("Business name required", "error");
+          return;
+        }
+        const quoted =
+          parseFloat(document.getElementById("f-quoted").value) || 0;
+        const advance =
+          parseFloat(document.getElementById("f-advance").value) || 0;
+        const balance = Math.max(0, quoted - advance);
+        const payStatus =
+          advance === 0
+            ? "Pending"
+            : balance === 0
+              ? "Full Paid"
+              : "Advance Paid";
+
+        const data = {
+          business_name: name,
+          niche: document.getElementById("f-fniche").value,
+          source: document.getElementById("f-source").value,
+          city: document.getElementById("f-city").value,
+          area: document.getElementById("f-area").value,
+          website_status: document.getElementById("f-webstatus").value,
+          priority: document.getElementById("f-priority2").value,
+          phone: document.getElementById("f-phone").value,
+          whatsapp_number: document.getElementById("f-wa").value,
+          lead_status: document.getElementById("f-lstatus").value,
+          quoted_price: quoted,
+          advance_received: advance,
+          balance_pending: balance,
+          payment_status: payStatus,
+          owner: currentUser.name,
+          meeting_date: document.getElementById("f-meeting").value || null,
+          follow_up_date: document.getElementById("f-followup").value || null,
+          deal_close_date: document.getElementById("f-closedate").value || null,
+          delivery_deadline:
+            document.getElementById("f-deadline").value || null,
+          website_delivery_status:
+            document.getElementById("f-delivstatus").value,
+          revision_round:
+            parseInt(document.getElementById("f-revision").value) || 0,
+          live_url: document.getElementById("f-liveurl").value,
+          notes: document.getElementById("f-notes").value,
+        };
+
+        if (editId) {
+          const { error } = await db
+            .from("leads")
+            .update(data)
+            .eq("id", editId);
+          if (error) {
+            toast("Error: " + error.message, "error");
+            return;
+          }
+          await logAct(`Updated: ${name} by ${currentUser.name}`, "gold");
+          toast("✅ Lead updated", "success");
+        } else {
+          const { error } = await db.from("leads").insert(data);
+          if (error) {
+            toast("Error: " + error.message, "error");
+            return;
+          }
+          await logAct(`New lead: ${name} by ${currentUser.name}`, "teal");
+          toast("✅ Lead added", "success");
+        }
+        closeModal("modal-lead");
+        await loadAll();
+      }
+
+      /* ═══ DELETE LEAD ═════════════════════════════════ */
+      async function deleteLead(id) {
+        const l = leads.find((x) => x.id === id);
+        if (!confirm(`Delete "${l?.business_name}"?`)) return;
+        await db.from("leads").delete().eq("id", id);
+        await logAct(`Deleted: ${l?.business_name}`, "red");
+        toast("Lead deleted", "info");
+        await loadAll();
+      }
+
+      /* ═══ INLINE UPDATE ═══════════════════════════════ */
+      async function inlineUpdate(id, field, value) {
+        const updates = { [field]: value };
+        // Recalc balance if money fields change
+        const l = leads.find((x) => x.id === id);
+        if (l && (field === "quoted_price" || field === "advance_received")) {
+          const q =
+            field === "quoted_price"
+              ? parseFloat(value) || 0
+              : parseFloat(l.quoted_price) || 0;
+          const a =
+            field === "advance_received"
+              ? parseFloat(value) || 0
+              : parseFloat(l.advance_received) || 0;
+          updates.balance_pending = Math.max(0, q - a);
+          updates.payment_status =
+            a === 0
+              ? "Pending"
+              : updates.balance_pending === 0
+                ? "Full Paid"
+                : "Advance Paid";
+        }
+        await db.from("leads").update(updates).eq("id", id);
+        await loadAll();
+      }
+
+      /* ═══ FORM HELPERS ════════════════════════════════ */
+      function calcBalance() {
+        const q = parseFloat(document.getElementById("f-quoted").value) || 0;
+        const a = parseFloat(document.getElementById("f-advance").value) || 0;
+        const b = Math.max(0, q - a);
+        const el = document.getElementById("f-balance-display");
+        el.textContent = "₹" + b.toLocaleString("en-IN");
+        el.className = "balance-display " + (b > 0 ? "red" : "green");
+        const ps =
+          a === 0 ? "Pending" : b === 0 ? "Full Paid ✅" : "Advance Paid";
+        document.getElementById("f-paystatus-display").textContent = ps;
+      }
+
+      function toggleCondFields() {
+        const status = document.getElementById("f-lstatus").value;
+        const isClosed = status === "Deal Closed";
+        document
+          .getElementById("cf-closedate")
+          .classList.toggle("show", isClosed);
+        document
+          .getElementById("cf-deadline")
+          .classList.toggle("show", isClosed);
+      }
+
+      function toggleLiveUrl() {
+        const s = document.getElementById("f-delivstatus").value;
+        document
+          .getElementById("cf-liveurl")
+          .classList.toggle("show", s === "Delivered");
+      }
+
+      function syncWA() {
+        if (document.getElementById("wa-same").checked) {
+          document.getElementById("f-wa").value =
+            document.getElementById("f-phone").value;
+        }
+      }
+
+      /* ═══ TABLE RENDER ════════════════════════════════ */
+      function stBdg(s) {
+        const map = {
+          Interested: "bdg-interested",
+          "Deal Closed": "bdg-closed",
+          "Not Interested": "bdg-not",
+        };
+        return `<span class="bdg ${map[s] || "bdg-interested"}">${s || "—"}</span>`;
+      }
+      function prBdg(p) {
+        const map = { Hot: "bdg-hot", Warm: "bdg-warm", Cold: "bdg-cold" };
+        return `<span class="bdg ${map[p] || "bdg-warm"}">${p || "—"}</span>`;
+      }
+      function payBdg(p) {
+        const map = {
+          Pending: "bdg-pending",
+          "Advance Paid": "bdg-advance",
+          "Full Paid": "bdg-paid",
+        };
+        return `<span class="bdg ${map[p] || "bdg-pending"}">${p || "—"}</span>`;
+      }
+      function waBtn(phone, name, status) {
+        if (!phone) return "—";
+        const scripts = {
+          Interested: `Hello ${name} ji 🙏\n\nMain Shahid bol raha hoon — DopeOrca se. Aapka business Google Maps pe dekha. Main professional websites banata hoon. Kya main ek quick example show kar sakta hoon? 5 minute kaafi hai 😊\n\n— Shahid | DopeOrca`,
+          "Deal Closed": `Hi ${name}, great working with you! Website delivery update: everything is on track. Let me know if you need anything.\n\n— Shahid | DopeOrca`,
+          default: `Hi ${name}, this is Shahid from DopeOrca. Following up on our conversation. Let me know a good time to connect!\n\n— Shahid | DopeOrca`,
+        };
+        const msg = scripts[status] || scripts.default;
+        const num = phone.replace(/\D/g, "");
+        return `<a class="tbl-wa" href="https://wa.me/${num}?text=${encodeURIComponent(msg)}" target="_blank">📱 WA</a>`;
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("tbody");
+        const empty = document.getElementById("tbl-empty");
+        document.getElementById("count-lbl").textContent =
+          filtered.length + " leads";
+        if (!filtered.length) {
+          tbody.innerHTML = "";
+          empty.style.display = "block";
+          updatePager();
+          return;
+        }
+        empty.style.display = "none";
+        const slice = filtered.slice(page * PER, (page + 1) * PER);
+        tbody.innerHTML = slice
+          .map(
+            (l, i) => `<tr>
+    <td class="row-num">${page * PER + i + 1}</td>
+    <td><div class="biz-name-cell" onclick="openEditLead('${l.id}')" title="${l.business_name}">${l.business_name || "—"}</div></td>
+    <td style="color:var(--sub);font-size:11px">${l.niche || "—"}</td>
+    <td style="color:var(--sub);font-size:11px">${l.area || "—"}</td>
+    <td>${l.phone ? `<a href="tel:${l.phone}" style="color:var(--blue);text-decoration:none">${l.phone}</a>` : "—"}</td>
+    <td style="font-size:11px">${l.owner || "—"}</td>
+    <td>${stBdg(l.lead_status)}</td>
+    <td>${prBdg(l.priority)}</td>
+    <td><input class="il-money" type="number" value="${l.quoted_price || ""}" placeholder="₹0" onchange="inlineUpdate('${l.id}','quoted_price',this.value)"/></td>
+    <td><input class="il-money" type="number" value="${l.advance_received || ""}" placeholder="₹0" onchange="inlineUpdate('${l.id}','advance_received',this.value)"/></td>
+    <td style="font-family:'Syne',sans-serif;font-weight:700;color:${(l.balance_pending || 0) > 0 ? "var(--red2)" : "var(--green)"}">₹${(l.balance_pending || 0).toLocaleString("en-IN")}</td>
+    <td>${payBdg(l.payment_status)}</td>
+    <td><input class="il-date" type="date" value="${l.follow_up_date || ""}" onchange="inlineUpdate('${l.id}','follow_up_date',this.value)"/></td>
+    <td><input class="il-date" type="date" value="${l.deal_close_date || ""}" onchange="inlineUpdate('${l.id}','deal_close_date',this.value)"/></td>
+    <td><input class="il-date" type="date" value="${l.delivery_deadline || ""}" onchange="inlineUpdate('${l.id}','delivery_deadline',this.value)"/></td>
+    <td style="font-size:11px;color:var(--sub)">${l.website_delivery_status || "—"}</td>
+    <td><input class="il-input" value="${(l.notes || "").substring(0, 40)}" placeholder="Notes..." onchange="inlineUpdate('${l.id}','notes',this.value)"/></td>
+    <td style="white-space:nowrap">
+      ${waBtn(l.whatsapp_number || l.phone, l.business_name, l.lead_status)}
+      <button class="tbl-del" onclick="deleteLead('${l.id}')">🗑</button>
+    </td>
+  </tr>`,
+          )
+          .join("");
+        updatePager();
+      }
+
+      function updatePager() {
+        const total = Math.ceil(filtered.length / PER) || 1;
+        document.getElementById("pg-info").textContent =
+          `Page ${page + 1} of ${total}`;
+        document.getElementById("pg-prev").disabled = page === 0;
+        document.getElementById("pg-next").disabled = page >= total - 1;
+      }
+
+      function applyFilters() {
+        const q = (
+          document.getElementById("tbl-search")?.value || ""
+        ).toLowerCase();
+        const st = document.getElementById("f-status")?.value || "";
+        const pr = document.getElementById("f-priority")?.value || "";
+        const ni = document.getElementById("f-niche")?.value || "";
+        const pa = document.getElementById("f-payment")?.value || "";
+        filtered = leads.filter((l) => {
+          if (
+            q &&
+            !`${l.business_name}${l.phone}${l.area}${l.niche}${l.notes}`
+              .toLowerCase()
+              .includes(q)
+          )
+            return false;
+          if (st && l.lead_status !== st) return false;
+          if (pr && l.priority !== pr) return false;
+          if (ni && l.niche !== ni) return false;
+          if (pa && l.payment_status !== pa) return false;
+          return true;
+        });
+        page = 0;
+        renderTable();
+      }
+
+      function clearFilters() {
+        [
+          "tbl-search",
+          "f-status",
+          "f-priority",
+          "f-niche",
+          "f-payment",
+        ].forEach((id) => {
+          const e = document.getElementById(id);
+          if (e) e.value = "";
+        });
+        applyFilters();
+      }
+
+      function go(d) {
+        page += d;
+        renderTable();
+      }
+
+      function globalSearch(q) {
+        if (!q) return;
+        nav(document.querySelector('[onclick*="table"]'), "table");
+        document.getElementById("tbl-search").value = q;
+        applyFilters();
+      }
+
+      /* ═══ KANBAN ══════════════════════════════════════ */
+      const KB_STAGES = [
+        "Interested",
+        "Called",
+        "Meeting Set",
+        "Follow Up",
+        "Negotiating",
+        "Deal Closed",
+        "Not Interested",
+      ];
+      const KB_COLORS = {
+        Interested: "#4a9eff",
+        Called: "#f97316",
+        "Meeting Set": "#a855f7",
+        "Follow Up": "#e8b84b",
+        Negotiating: "#00d4aa",
+        "Deal Closed": "#22c55e",
+        "Not Interested": "#f04545",
+      };
+
+      function renderKanban() {
+        const wrap = document.getElementById("kanban-wrap");
+        wrap.innerHTML = KB_STAGES.map((stage) => {
+          const cards = leads.filter((l) => l.lead_status === stage);
+          return `<div class="kb-col" data-stage="${stage}">
+      <div class="kb-col-head">
+        <div class="kb-col-title" style="color:${KB_COLORS[stage]}">${stage}</div>
+        <div class="kb-col-cnt">${cards.length}</div>
+      </div>
+      <div class="kb-cards">
+        ${
+          cards.length
+            ? cards
+                .map(
+                  (l) => `
+          <div class="kb-card" draggable="true" data-id="${l.id}"
+            ondragstart="dragStart(event,'${l.id}')"
+            ondragend="dragEnd(event)">
+            <div class="kb-card-name" title="${l.business_name}">${l.business_name}</div>
+            <div class="kb-card-meta">${l.niche || "—"} · ${l.area || "—"}</div>
+            <div class="kb-card-tags">
+              <span class="kb-tag ${l.priority === "Hot" ? "bdg-hot" : l.priority === "Warm" ? "bdg-warm" : "bdg-cold"}">${l.priority || "—"}</span>
+              ${l.quoted_price ? `<span class="kb-tag" style="background:rgba(232,184,75,.1);color:var(--gold)">₹${(l.quoted_price / 1000).toFixed(0)}k</span>` : ""}
+            </div>
+            <div class="kb-actions">
+              ${l.phone ? `<a class="kb-wa" href="https://wa.me/${(l.whatsapp_number || l.phone).replace(/\D/g, "")}?text=${encodeURIComponent("Hello " + l.business_name + ", Shahid from DopeOrca here 🙏")}" target="_blank">📱</a>` : ""}
+              <button class="kb-wa" style="margin-left:4px" onclick="openEditLead('${l.id}')">✏</button>
+            </div>
+          </div>`,
+                )
+                .join("")
+            : `<div class="kb-empty">Empty</div>`
+        }
+      </div>
+    </div>`;
+        }).join("");
+
+        document.querySelectorAll(".kb-col").forEach((col) => {
+          col.addEventListener("dragover", (e) => e.preventDefault());
+          col.addEventListener("dragenter", (e) => {
+            e.preventDefault();
+            col.classList.add("drag-over");
+          });
+          col.addEventListener("dragleave", () =>
+            col.classList.remove("drag-over"),
+          );
+          col.addEventListener("drop", (e) => dropCard(e, col.dataset.stage));
+        });
+      }
+
+      function dragStart(e, id) {
+        dragId = id;
+        e.currentTarget.classList.add("dragging");
+      }
+      function dragEnd(e) {
+        e.currentTarget.classList.remove("dragging");
+        document
+          .querySelectorAll(".kb-col")
+          .forEach((c) => c.classList.remove("drag-over"));
+      }
+
+      async function dropCard(e, stage) {
+        e.preventDefault();
+        document
+          .querySelectorAll(".kb-col")
+          .forEach((c) => c.classList.remove("drag-over"));
+        if (!dragId) return;
+        const l = leads.find((x) => x.id === dragId);
+        if (!l || l.lead_status === stage) {
+          dragId = null;
+          return;
+        }
+        await db.from("leads").update({ lead_status: stage }).eq("id", dragId);
+        await logAct(
+          `${l.business_name} → ${stage}`,
+          stage === "Deal Closed" ? "green" : "teal",
+        );
+        dragId = null;
+        await loadAll();
+        renderKanban();
+        toast(`Moved to ${stage}`, "success");
+      }
+
+      /* ═══ DASHBOARD ═══════════════════════════════════ */
+      function refreshDash() {
+        const isOwner = currentUser.isOwner;
+        const totalQuoted = leads.reduce(
+          (s, l) => s + (parseFloat(l.quoted_price) || 0),
+          0,
+        );
+        const totalAdv = leads.reduce(
+          (s, l) => s + (parseFloat(l.advance_received) || 0),
+          0,
+        );
+        const totalBal = leads.reduce(
+          (s, l) => s + (parseFloat(l.balance_pending) || 0),
+          0,
+        );
+        const closed = leads.filter(
+          (l) => l.lead_status === "Deal Closed",
+        ).length;
+        const hot = leads.filter((l) => l.priority === "Hot").length;
+        const sufiLeads = isOwner
+          ? leads.filter((l) => l.owner === "Sufi Khan")
+          : [];
+        const sufiAdv = sufiLeads.reduce(
+          (s, l) => s + (parseFloat(l.advance_received) || 0),
+          0,
+        );
+        const sufiComm = sufiAdv * 0.06;
+        const goal = 50000;
+        const pct = Math.min(Math.round((totalAdv / goal) * 100), 100);
+
+        // sidebar
+        document.getElementById("sb-total").textContent =
+          "₹" + totalAdv.toLocaleString("en-IN");
+        document.getElementById("sb-pct").textContent = pct + "%";
+        document.getElementById("sb-fill").style.width = pct + "%";
+
+        // stats
+        document.getElementById("dash-stats").innerHTML = `
+    <div class="stat"><div class="stat-n" style="color:var(--gold)">${leads.length}</div><div class="stat-l">Total Leads</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)">${closed}</div><div class="stat-l">Deals Closed</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--red)">₹${(totalBal / 1000).toFixed(1)}k</div><div class="stat-l">Balance Due</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--blue)">${hot}</div><div class="stat-l">Hot Leads</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--purple)">₹${(totalAdv / 1000).toFixed(1)}k</div><div class="stat-l">Advance Received</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--teal)">${isOwner ? "₹" + sufiComm.toLocaleString("en-IN") : leads.length}</div><div class="stat-l">${isOwner ? "Sufi Commission" : "My Leads"}</div></div>`;
+
+        // money bar
+        document.getElementById("dash-money").innerHTML = `
+    <div class="money-card gold-glow"><div class="money-label">Total Quoted</div><div class="money-num" style="color:var(--gold)">₹${totalQuoted.toLocaleString("en-IN")}</div><div class="money-sub">${leads.filter((l) => l.quoted_price > 0).length} leads with price</div></div>
+    <div class="money-card green-glow"><div class="money-label">Advance Received</div><div class="money-num" style="color:var(--green)">₹${totalAdv.toLocaleString("en-IN")}</div><div class="money-sub">${pct}% of ₹50k goal</div></div>
+    <div class="money-card red-glow"><div class="money-label">Balance Pending</div><div class="money-num" style="color:var(--red2)">₹${totalBal.toLocaleString("en-IN")}</div><div class="money-sub">${leads.filter((l) => (l.balance_pending || 0) > 0).length} deals pending</div></div>
+    <div class="money-card"><div class="money-label">${isOwner ? "Sufi Commission Owed" : "My Commission"}</div><div class="money-num" style="color:var(--purple)">₹${isOwner ? sufiComm.toLocaleString("en-IN") : (leads.filter((l) => l.owner === currentUser.name).reduce((s, l) => s + (parseFloat(l.advance_received) || 0), 0) * 0.06).toLocaleString("en-IN")}</div><div class="money-sub">@ 6% on advance</div></div>`;
+
+        // hot leads
+        const hotEl = document.getElementById("dash-hot");
+        const hotLeads = leads.filter((l) => l.priority === "Hot").slice(0, 5);
+        hotEl.innerHTML = hotLeads.length
+          ? hotLeads
+              .map(
+                (l) => `
+    <div class="act-item" style="cursor:pointer" onclick="openEditLead('${l.id}')">
+      <div class="act-dot" style="background:var(--red)"></div>
+      <div><div class="act-txt">${l.business_name}</div><div class="act-time">${l.lead_status} · ${l.area || l.city || "—"} · ${l.phone || "—"}</div></div>
+    </div>`,
+              )
+              .join("")
+          : `<div class="empty"><div class="empty-txt">No hot leads. Mark priority as Hot.</div></div>`;
+
+        // activity on dash
+        const dashAct = document.getElementById("dash-activity");
+        const colors = {
+          teal: "var(--teal)",
+          green: "var(--green)",
+          gold: "var(--gold)",
+          red: "var(--red)",
+        };
+        dashAct.innerHTML =
+          activity
+            .slice(0, 6)
+            .map(
+              (a) => `
+    <div class="act-item">
+      <div class="act-dot" style="background:${colors[a.color] || "var(--teal)"}"></div>
+      <div><div class="act-txt">${a.action}</div><div class="act-time">${new Date(a.created_at).toLocaleString("en-IN")}</div></div>
+    </div>`,
+            )
+            .join("") ||
+          `<div class="empty"><div class="empty-txt">No activity yet</div></div>`;
+      }
+
+      /* ═══ MONEY PAGE ══════════════════════════════════ */
+      function renderMoneyPage() {
+        const isOwner = currentUser.isOwner;
+        const byOwner = (name) => leads.filter((l) => l.owner === name);
+        const sum = (arr, field) =>
+          arr.reduce((s, l) => s + (parseFloat(l[field]) || 0), 0);
+
+        let html = `<div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px">
+    <div class="money-card gold-glow"><div class="money-label">Total Quoted</div><div class="money-num" style="color:var(--gold)">₹${sum(leads, "quoted_price").toLocaleString("en-IN")}</div></div>
+    <div class="money-card green-glow"><div class="money-label">Total Advance</div><div class="money-num" style="color:var(--green)">₹${sum(leads, "advance_received").toLocaleString("en-IN")}</div></div>
+    <div class="money-card red-glow"><div class="money-label">Total Balance Due</div><div class="money-num" style="color:var(--red2)">₹${sum(leads, "balance_pending").toLocaleString("en-IN")}</div></div>
+    <div class="money-card"><div class="money-label">Deals Closed</div><div class="money-num" style="color:var(--teal)">${leads.filter((l) => l.lead_status === "Deal Closed").length}</div></div>
+  </div>`;
+
+        if (isOwner) {
+          const shahidLeads = byOwner("Shahid Khan");
+          const sufiLeads = byOwner("Sufi Khan");
+          html += `<div class="two" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-title">👑 Shahid Khan</div>
+        <div class="act-item"><div class="act-dot" style="background:var(--gold)"></div><div><div class="act-txt">Quoted: ₹${sum(shahidLeads, "quoted_price").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--green)"></div><div><div class="act-txt">Advance: ₹${sum(shahidLeads, "advance_received").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--red)"></div><div><div class="act-txt">Balance: ₹${sum(shahidLeads, "balance_pending").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--teal)"></div><div><div class="act-txt">Closed: ${shahidLeads.filter((l) => l.lead_status === "Deal Closed").length} deals</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚡ Sufi Khan <span style="font-size:10px;color:var(--teal);font-family:'JetBrains Mono',monospace">Commission: ₹${(sum(sufiLeads, "advance_received") * 0.06).toLocaleString("en-IN")}</span></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--gold)"></div><div><div class="act-txt">Quoted: ₹${sum(sufiLeads, "quoted_price").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--green)"></div><div><div class="act-txt">Advance: ₹${sum(sufiLeads, "advance_received").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--red)"></div><div><div class="act-txt">Balance: ₹${sum(sufiLeads, "balance_pending").toLocaleString("en-IN")}</div></div></div>
+        <div class="act-item"><div class="act-dot" style="background:var(--teal)"></div><div><div class="act-txt">Closed: ${sufiLeads.filter((l) => l.lead_status === "Deal Closed").length} deals</div></div></div>
+      </div>
+    </div>`;
+        }
+
+        // All deals with money
+        const moneyLeads = leads
+          .filter((l) => (l.quoted_price || 0) > 0)
+          .sort((a, b) => (b.quoted_price || 0) - (a.quoted_price || 0));
+        html += `<div class="card"><div class="card-title">All Deals with Money</div>
+    <div style="overflow-x:auto"><table style="min-width:100%">
+      <thead><tr>
+        <th>Business</th><th>Owner</th><th>Quoted</th><th>Advance</th><th>Balance</th><th>Status</th><th>Payment</th>
+      </tr></thead>
+      <tbody>${moneyLeads
+        .map(
+          (l) => `<tr>
+        <td style="font-weight:600">${l.business_name}</td>
+        <td style="font-size:11px;color:var(--sub)">${l.owner}</td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold)">₹${(l.quoted_price || 0).toLocaleString("en-IN")}</td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green)">₹${(l.advance_received || 0).toLocaleString("en-IN")}</td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;color:${(l.balance_pending || 0) > 0 ? "var(--red2)" : "var(--green)"}">₹${(l.balance_pending || 0).toLocaleString("en-IN")}</td>
+        <td>${stBdg(l.lead_status)}</td>
+        <td>${payBdg(l.payment_status)}</td>
+      </tr>`,
+        )
+        .join("")}</tbody>
+    </table></div></div>`;
+
+        document.getElementById("money-overview").innerHTML = html;
+      }
+
+      /* ═══ ACTIVITY ════════════════════════════════════ */
+      function renderActivity() {
+        const colors = {
+          teal: "var(--teal)",
+          green: "var(--green)",
+          gold: "var(--gold)",
+          red: "var(--red)",
+        };
+        const html =
+          activity
+            .slice(0, 60)
+            .map(
+              (a) => `
+    <div class="act-item">
+      <div class="act-dot" style="background:${colors[a.color] || "var(--teal)"}"></div>
+      <div><div class="act-txt">${a.action}</div><div class="act-time">${a.owner} · ${new Date(a.created_at).toLocaleString("en-IN")}</div></div>
+    </div>`,
+            )
+            .join("") ||
+          `<div class="empty"><div class="empty-txt">No activity</div></div>`;
+        const el1 = document.getElementById("activity-full");
+        if (el1) el1.innerHTML = html;
+      }
+
+      async function clearActivity() {
+        if (!currentUser.isOwner) {
+          toast("Only owner can clear activity", "error");
+          return;
+        }
+        await db
+          .from("activity")
+          .delete()
+          .neq("id", "00000000-0000-0000-0000-000000000000");
+        activity = [];
+        renderActivity();
+        toast("Activity cleared", "info");
+      }
+
+      /* ═══ SCRIPTS ═════════════════════════════════════ */
+      const SCRIPTS = [
+        {
+          tag: "WA · Hindi · No Website",
+          tc: "rgba(37,211,102,.1)",
+          tt: "#25d366",
+          body: `Hello [Naam] ji 🙏\n\nMain Shahid bol raha hoon — DopeOrca se. Aapka coaching center Google Maps pe dekha — Mulund mein.\n\nMaine notice kiya ki aapki abhi koi website nahi hai. Aajkal jo bhi parent ya student search karta hai wo pehle Google pe jaata hai — website nahi toh competitor ke paas chala jaata hai.\n\nMain professional websites banata hoon specifically coaching classes ke liye. Kya main aapko ek quick example show kar sakta hoon? 5 minute kaafi hai 😊\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "WA · English · Bad Website",
+          tc: "rgba(74,158,255,.1)",
+          tt: "#4a9eff",
+          body: `Hi [Name],\n\nI'm Shahid from DopeOrca. I came across your business in Mulund and noticed your website isn't loading well on mobile — which could be costing you clients daily.\n\nI build fast, professional websites for local businesses. Can I show you a quick before/after example — just 5 minutes?\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Follow-Up · Day 3 · Loss Aversion",
+          tc: "rgba(232,184,75,.1)",
+          tt: "var(--gold)",
+          body: `[Naam] ji — ek important update.\n\nHumne aapke liye ek project slot hold kiya tha lekin confirmation nahi aayi abhi tak. Kuch aur inquiries aa rahi hain.\n\nAgar kuch cheez mein stuck hain — bata dein, milke solve karte hain.\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Follow-Up · Day 5 · Social Proof",
+          tc: "rgba(168,85,247,.1)",
+          tt: "#c084fc",
+          body: `Hi [Name],\n\nJust sharing — we recently launched a website for a coaching center in Mulund. They received 3 new student inquiries in the first 2 weeks directly through the site.\n\nWould love to do the same for your center.\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Follow-Up · Day 7 · FOMO",
+          tc: "rgba(240,69,69,.1)",
+          tt: "var(--red)",
+          body: `Hi [Name], quick heads-up — my current project slots for this month are nearly full. One spot left.\n\nI don't want you to miss out. If anything's holding you back let's talk.\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Objection · Too Expensive",
+          tc: "rgba(249,115,22,.1)",
+          tt: "#fb923c",
+          body: `[Naam] ji — bilkul samajhta hoon. Par ek sasti website se kya milega? Slow, no conversions, students click karke chale jaate hain.\n\nDopeOrca ki website ek bhi extra inquiry se apna cost recover kar leti hai. Sawaal ye hai: quality zyada zaroori hai ya initial cost?\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Objection · Need to Think",
+          tc: "rgba(107,114,128,.1)",
+          tt: "#9ca3af",
+          body: `[Naam] ji — bilkul, soch ke hi sahi decision hota hai.\n\nBss ek curiosity — kya aap website ke baare mein soch rahe hain ya pricing ke baare mein? Dono ke liye mera jawab alag hoga.\n\n— Shahid | DopeOrca`,
+        },
+        {
+          tag: "Closing · Confident",
+          tc: "rgba(0,212,170,.1)",
+          tt: "var(--teal)",
+          body: `[Name], I've shared everything relevant for your business. You have all the info to make the right call.\n\nI'm giving you space to decide. One thing — I do have one project slot left this month, so sooner is better. No pressure — it's your decision.\n\n— Shahid | DopeOrca`,
+        },
+        ,
+        {
+          tag: "Who Are We · Intro",
+          tc: "rgba(232,184,75,.1)",
+          tt: "var(--gold)",
+          body: "We are DopeOrca — a web design agency based in Mumbai.\n\nWe build professional websites for local businesses — coaching centers, clinics, gyms, salons — helping them get more clients online.\n\nFast, mobile-friendly websites built to convert visitors into paying customers.\n\nStarting at very reasonable price for a complete professional website.\n\n— Shahid Khan | Founder, DopeOrca",
+        },
+      ];
+
+      function renderScripts() {
+        document.getElementById("scripts-grid").innerHTML = SCRIPTS.map(
+          (s, i) => `
+    <div class="sc-card">
+      <div class="sc-head">
+        <span class="sc-tag" style="background:${s.tc};color:${s.tt}">${s.tag}</span>
+        <button class="btn btn-ghost btn-sm" onclick="copyScript(${i})">📋 Copy</button>
+      </div>
+      <div class="sc-body">${s.body.replace(/\n/g, "<br>")}</div>
+    </div>`,
+        ).join("");
+      }
+
+      function copyScript(i) {
+        navigator.clipboard
+          .writeText(SCRIPTS[i].body)
+          .then(() => toast("📋 Copied!", "success", 1800))
+          .catch(() => toast("Select manually", "info"));
+      }
+
+      /* ═══ CHECKLIST ═══════════════════════════════════ */
+      const TASKS = [
+        "Find 50 leads today",
+        "Send 10 WhatsApp messages",
+        "Follow up yesterday's leads",
+        "Book 1 discovery call",
+        "Log any payment received",
+      ];
+      let checks = JSON.parse(
+        localStorage.getItem("do_checks") || "[false,false,false,false,false]",
+      );
+
+      function buildChecklist() {
+        const el = document.getElementById("dash-checklist");
+        if (!el) return;
+        el.innerHTML = TASKS.map(
+          (t, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--b1);cursor:pointer" onclick="toggleCheck(${i})">
+      <div style="width:15px;height:15px;border-radius:4px;border:1px solid var(--b2);flex-shrink:0;display:flex;align-items:center;justify-content:center;${checks[i] ? "background:var(--green);border-color:var(--green)" : ""}">
+        ${checks[i] ? `<svg width="9" height="9" viewBox="0 0 9 9"><polyline points="1,4.5 3.5,7 8,1.5" stroke="#fff" stroke-width="1.5" fill="none"/></svg>` : ""}
+      </div>
+      <span style="font-size:12px;${checks[i] ? "color:var(--dim);text-decoration:line-through" : ""}">${t}</span>
+    </div>`,
+        ).join("");
+      }
+
+      function toggleCheck(i) {
+        checks[i] = !checks[i];
+        localStorage.setItem("do_checks", JSON.stringify(checks));
+        buildChecklist();
+      }
+
+      /* ═══ EXPORT CSV ══════════════════════════════════ */
+      function exportCSV() {
+        const h = [
+          "ID",
+          "Business",
+          "Niche",
+          "Area",
+          "City",
+          "Phone",
+          "WA",
+          "Owner",
+          "Status",
+          "Priority",
+          "Quoted",
+          "Advance",
+          "Balance",
+          "Payment",
+          "Follow Up",
+          "Close Date",
+          "Delivery",
+          "Web Status",
+          "Del Status",
+          "Live URL",
+          "Notes",
+          "Created",
+        ];
+        const rows = [
+          h,
+          ...leads.map((l) => [
+            l.id,
+            l.business_name,
+            l.niche,
+            l.area,
+            l.city,
+            l.phone,
+            l.whatsapp_number,
+            l.owner,
+            l.lead_status,
+            l.priority,
+            l.quoted_price,
+            l.advance_received,
+            l.balance_pending,
+            l.payment_status,
+            l.follow_up_date,
+            l.deal_close_date,
+            l.delivery_deadline,
+            l.website_status,
+            l.website_delivery_status,
+            l.live_url,
+            l.notes,
+            l.created_at,
+          ]),
+        ];
+        const csv = rows
+          .map((r) =>
+            r.map((c) => `"${String(c || "").replace(/"/g, '""')}"`).join(","),
+          )
+          .join("\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        a.download = `DopeOrca_${new Date().toLocaleDateString("en-IN").replace(/\//g, "-")}.csv`;
+        a.click();
+        toast("⬇ CSV exported", "success");
+      }
+
+      /* ═══ NAV ═════════════════════════════════════════ */
+      let currentPage = "dash";
+      function nav(btn, id) {
+        currentPage = id;
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById("page-" + id).classList.add("active");
+        if (btn) btn.classList.add("active");
+        if (id === "pipeline") renderKanban();
+        if (id === "money") renderMoneyPage();
+        if (id === "activity") renderActivity();
+        if (id === "dash") {
+          refreshDash();
+          buildChecklist();
+        }
+      }
+
+      /* ═══ MODAL ═══════════════════════════════════════ */
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+
+      /* ═══ TOAST ═══════════════════════════════════════ */
+      function toast(msg, type = "info", dur = 3000) {
+        const t = document.createElement("div");
+        t.className = `toast toast-${type}`;
+        t.textContent = msg;
+        document.getElementById("toast-area").appendChild(t);
+        setTimeout(() => {
+          t.style.animation = "toastIn .2s ease reverse";
+          setTimeout(() => t.remove(), 200);
+        }, dur);
+      }
+
+      /* ═══ REFRESH ALL ═════════════════════════════════ */
+      function refreshAll() {
+        document.getElementById("nb-leads").textContent = leads.length;
+        applyFilters();
+        if (currentPage === "pipeline") renderKanban();
+        if (currentPage === "money") renderMoneyPage();
+        if (currentPage === "activity") renderActivity();
+        refreshDash();
+      }
+
+      /* ═══ LOCATION DATA ═══════════════════════════════ */
+      const LOC_DATA = {
+        India: {
+          Mumbai: [
+            "Mulund West",
+            "Mulund East",
+            "Bhandup",
+            "Thane",
+            "Andheri",
+            "Bandra",
+            "Borivali",
+            "Dadar",
+            "Kurla",
+            "Powai",
+            "Vikhroli",
+            "Ghatkopar",
+            "Chembur",
+            "Malad",
+            "Goregaon",
+          ],
+          Delhi: [
+            "Connaught Place",
+            "Karol Bagh",
+            "Lajpat Nagar",
+            "Dwarka",
+            "Rohini",
+            "Saket",
+            "Vasant Kunj",
+            "Janakpuri",
+            "Pitampura",
+            "Greater Kailash",
+          ],
+          Bangalore: [
+            "Koramangala",
+            "Indiranagar",
+            "Whitefield",
+            "Electronic City",
+            "HSR Layout",
+            "BTM Layout",
+            "Jayanagar",
+            "Malleshwaram",
+            "Rajajinagar",
+            "Marathahalli",
+          ],
+          Hyderabad: [
+            "Banjara Hills",
+            "Jubilee Hills",
+            "Madhapur",
+            "Gachibowli",
+            "Kondapur",
+            "Secunderabad",
+            "Ameerpet",
+            "Himayatnagar",
+            "Kukatpally",
+            "HITEC City",
+          ],
+          Pune: [
+            "Kothrud",
+            "Wakad",
+            "Baner",
+            "Hadapsar",
+            "Viman Nagar",
+            "Koregaon Park",
+            "Shivajinagar",
+            "Pimpri",
+            "Chinchwad",
+            "Hinjewadi",
+          ],
+          Chennai: [
+            "T Nagar",
+            "Adyar",
+            "Anna Nagar",
+            "Velachery",
+            "Porur",
+            "Tambaram",
+            "Chromepet",
+            "Nungambakkam",
+            "Mylapore",
+            "Besant Nagar",
+          ],
+          Kolkata: [
+            "Park Street",
+            "Salt Lake",
+            "New Town",
+            "Jadavpur",
+            "Ballygunge",
+            "Alipore",
+            "Howrah",
+            "Dum Dum",
+            "Gariahat",
+            "Tollygunge",
+          ],
+          Ahmedabad: [
+            "Navrangpura",
+            "Vastrapur",
+            "Satellite",
+            "Prahlad Nagar",
+            "Bodakdev",
+            "Maninagar",
+            "Gota",
+            "Chandkheda",
+            "Thaltej",
+            "Bopal",
+          ],
+          Jaipur: [
+            "Malviya Nagar",
+            "Vaishali Nagar",
+            "Mansarovar",
+            "C Scheme",
+            "Tonk Road",
+            "Ajmer Road",
+            "Jagatpura",
+            "Sanganer",
+            "Shyam Nagar",
+            "Raja Park",
+          ],
+          Chandigarh: [
+            "Sector 17",
+            "Sector 22",
+            "Sector 34",
+            "Sector 35",
+            "Mohali",
+            "Panchkula",
+            "Zirakpur",
+            "Sector 43",
+            "Sector 44",
+            "IT Park",
+          ],
+        },
+        UAE: {
+          Dubai: [
+            "Deira",
+            "Bur Dubai",
+            "Jumeirah",
+            "Al Barsha",
+            "Downtown",
+            "Business Bay",
+            "Silicon Oasis",
+            "Al Quoz",
+            "Karama",
+            "Satwa",
+          ],
+          "Abu Dhabi": [
+            "Khalidiyah",
+            "Corniche",
+            "Al Reem Island",
+            "Mussafah",
+            "Al Ain",
+            "Yas Island",
+            "Saadiyat",
+            "Al Nahyan",
+            "Electra Street",
+            "Tourist Club Area",
+          ],
+          Sharjah: [
+            "Al Nahda",
+            "Rolla",
+            "Al Qasimia",
+            "Muwaileh",
+            "Al Majaz",
+            "Al Taawun",
+            "Industrial Area",
+            "Al Khan",
+            "Abu Shagara",
+            "Al Hazana",
+          ],
+          Ajman: [
+            "Al Nuaimiya",
+            "Al Rashidiya",
+            "Al Jurf",
+            "Ajman Uptown",
+            "Al Hamidiyah",
+            "Al Rawda",
+            "Mohala",
+            "Al Mowaihat",
+            "Al Rumailah",
+            "Al Sawan",
+          ],
+          "Ras Al Khaimah": [
+            "Al Nakheel",
+            "Al Hamra",
+            "Al Qurm",
+            "Dafan Al Nakheel",
+            "Mina Al Arab",
+            "Al Uraibi",
+            "Digdaga",
+            "Khuzam",
+            "Al Dhait",
+            "Sidroh",
+          ],
+        },
+        USA: {
+          "New York": [
+            "Manhattan",
+            "Brooklyn",
+            "Queens",
+            "Bronx",
+            "Staten Island",
+            "Harlem",
+            "Astoria",
+            "Flushing",
+            "Long Island City",
+            "Williamsburg",
+          ],
+          "Los Angeles": [
+            "Hollywood",
+            "Santa Monica",
+            "Venice",
+            "Koreatown",
+            "Downtown",
+            "Pasadena",
+            "Burbank",
+            "Glendale",
+            "Culver City",
+            "Silver Lake",
+          ],
+          Chicago: [
+            "Downtown",
+            "Lincoln Park",
+            "Wicker Park",
+            "Logan Square",
+            "Hyde Park",
+            "Evanston",
+            "Oak Park",
+            "Naperville",
+            "Schaumburg",
+            "Rosemont",
+          ],
+          Houston: [
+            "Midtown",
+            "Montrose",
+            "Heights",
+            "Sugar Land",
+            "Katy",
+            "Woodlands",
+            "Galleria",
+            "Greenway Plaza",
+            "Medical Center",
+            "Clear Lake",
+          ],
+          Phoenix: [
+            "Scottsdale",
+            "Tempe",
+            "Mesa",
+            "Chandler",
+            "Gilbert",
+            "Glendale",
+            "Peoria",
+            "Surprise",
+            "Goodyear",
+            "Avondale",
+          ],
+          Dallas: [
+            "Uptown",
+            "Oak Lawn",
+            "Deep Ellum",
+            "Plano",
+            "Frisco",
+            "McKinney",
+            "Garland",
+            "Irving",
+            "Arlington",
+            "Carrollton",
+          ],
+          Atlanta: [
+            "Midtown",
+            "Buckhead",
+            "Decatur",
+            "Marietta",
+            "Sandy Springs",
+            "Alpharetta",
+            "Dunwoody",
+            "Smyrna",
+            "Roswell",
+            "Norcross",
+          ],
+          Seattle: [
+            "Capitol Hill",
+            "Fremont",
+            "Ballard",
+            "Bellevue",
+            "Kirkland",
+            "Redmond",
+            "Renton",
+            "Federal Way",
+            "Tacoma",
+            "Lynnwood",
+          ],
+        },
+        UK: {
+          London: [
+            "Westminster",
+            "Shoreditch",
+            "Canary Wharf",
+            "Hackney",
+            "Brixton",
+            "Croydon",
+            "Ealing",
+            "Harrow",
+            "Wembley",
+            "Stratford",
+          ],
+          Manchester: [
+            "City Centre",
+            "Salford",
+            "Trafford",
+            "Stockport",
+            "Didsbury",
+            "Chorlton",
+            "Fallowfield",
+            "Hulme",
+            "Moss Side",
+            "Withington",
+          ],
+          Birmingham: [
+            "City Centre",
+            "Edgbaston",
+            "Erdington",
+            "Handsworth",
+            "Kings Heath",
+            "Moseley",
+            "Selly Oak",
+            "Solihull",
+            "Sutton Coldfield",
+            "Wolverhampton",
+          ],
+          Leeds: [
+            "City Centre",
+            "Headingley",
+            "Chapel Allerton",
+            "Roundhay",
+            "Morley",
+            "Pudsey",
+            "Horsforth",
+            "Garforth",
+            "Wetherby",
+            "Otley",
+          ],
+          Glasgow: [
+            "City Centre",
+            "West End",
+            "East End",
+            "Southside",
+            "Merchant City",
+            "Partick",
+            "Maryhill",
+            "Shawlands",
+            "Pollokshields",
+            "Giffnock",
+          ],
+        },
+        Australia: {
+          Sydney: [
+            "CBD",
+            "Parramatta",
+            "Bondi",
+            "Newtown",
+            "Surry Hills",
+            "Chatswood",
+            "Hornsby",
+            "Penrith",
+            "Liverpool",
+            "Blacktown",
+          ],
+          Melbourne: [
+            "CBD",
+            "Fitzroy",
+            "Richmond",
+            "St Kilda",
+            "Footscray",
+            "Dandenong",
+            "Frankston",
+            "Knox",
+            "Ringwood",
+            "Werribee",
+          ],
+          Brisbane: [
+            "CBD",
+            "Fortitude Valley",
+            "South Bank",
+            "Paddington",
+            "Chermside",
+            "Carindale",
+            "Logan",
+            "Ipswich",
+            "Redcliffe",
+            "Sunshine Coast",
+          ],
+          Perth: [
+            "CBD",
+            "Fremantle",
+            "Subiaco",
+            "Joondalup",
+            "Rockingham",
+            "Mandurah",
+            "Armadale",
+            "Midland",
+            "Cannington",
+            "Canning Vale",
+          ],
+          Adelaide: [
+            "CBD",
+            "Glenelg",
+            "Norwood",
+            "Prospect",
+            "Tea Tree Gully",
+            "Salisbury",
+            "Marion",
+            "Onkaparinga",
+            "Playford",
+            "Port Adelaide",
+          ],
+        },
+        Singapore: {
+          Singapore: [
+            "Orchard",
+            "Raffles Place",
+            "Bugis",
+            "Toa Payoh",
+            "Jurong",
+            "Tampines",
+            "Woodlands",
+            "Yishun",
+            "Clementi",
+            "Bedok",
+          ],
+        },
+        Canada: {
+          Toronto: [
+            "Downtown",
+            "Scarborough",
+            "North York",
+            "Etobicoke",
+            "Mississauga",
+            "Brampton",
+            "Markham",
+            "Richmond Hill",
+            "Vaughan",
+            "Oakville",
+          ],
+          Vancouver: [
+            "Downtown",
+            "Surrey",
+            "Burnaby",
+            "Richmond",
+            "Coquitlam",
+            "Langley",
+            "Delta",
+            "Abbotsford",
+            "New Westminster",
+            "North Vancouver",
+          ],
+        },
+      };
+
+      /* ═══ LOCATION PAGE FUNCTIONS ══════════════════════ */
+      function initLocations() {
+        const countrySel = document.getElementById("loc-country");
+        countrySel.innerHTML = '<option value="">— Select Country —</option>';
+        Object.keys(LOC_DATA).forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          countrySel.appendChild(o);
+        });
+      }
+
+      function locSelectCountry() {
+        const country = document.getElementById("loc-country").value;
+        const citySel = document.getElementById("loc-city");
+        const areaSel = document.getElementById("loc-area");
+        citySel.innerHTML = '<option value="">— Select City —</option>';
+        areaSel.innerHTML = '<option value="">— All Areas —</option>';
+        citySel.disabled = !country;
+        areaSel.disabled = true;
+        document.getElementById("loc-breadcrumb").style.display = "none";
+        document.getElementById("loc-stats").style.display = "none";
+        document.getElementById("loc-leads").innerHTML = "";
+        document.getElementById("loc-add-btn").style.display = "none";
+        if (!country) return;
+        Object.keys(LOC_DATA[country]).forEach((city) => {
+          const o = document.createElement("option");
+          o.value = city;
+          o.textContent = city;
+          citySel.appendChild(o);
+        });
+      }
+
+      function locSelectCity() {
+        const country = document.getElementById("loc-country").value;
+        const city = document.getElementById("loc-city").value;
+        const areaSel = document.getElementById("loc-area");
+        areaSel.innerHTML = '<option value="">— All Areas —</option>';
+        areaSel.disabled = !city;
+        if (!city) return;
+        const areas = LOC_DATA[country]?.[city] || [];
+        areas.forEach((a) => {
+          const o = document.createElement("option");
+          o.value = a;
+          o.textContent = a;
+          areaSel.appendChild(o);
+        });
+        locShowLeads(country, city, "");
+      }
+
+      function locSelectArea() {
+        const country = document.getElementById("loc-country").value;
+        const city = document.getElementById("loc-city").value;
+        const area = document.getElementById("loc-area").value;
+        locShowLeads(country, city, area);
+      }
+
+      function locShowLeads(country, city, area) {
+        if (!city) return;
+        const filtered = leads.filter((l) => {
+          const matchCity = (l.city || "").toLowerCase() === city.toLowerCase();
+          const matchArea =
+            !area || (l.area || "").toLowerCase() === area.toLowerCase();
+          return matchCity && matchArea;
+        });
+
+        // breadcrumb
+        const bc = document.getElementById("loc-breadcrumb");
+        bc.style.display = "block";
+        bc.innerHTML = `🌍 <span>${country}</span> → 📍 <span>${city}</span>${area ? ` → 📂 <span>${area}</span>` : ""}`;
+
+        // stats
+        const totalQ = filtered.reduce(
+          (s, l) => s + (parseFloat(l.quoted_price) || 0),
+          0,
+        );
+        const totalA = filtered.reduce(
+          (s, l) => s + (parseFloat(l.advance_received) || 0),
+          0,
+        );
+        const closed = filtered.filter(
+          (l) => l.lead_status === "Deal Closed",
+        ).length;
+        const statsEl = document.getElementById("loc-stats");
+        statsEl.style.display = "flex";
+        statsEl.innerHTML = `
+    <div class="loc-stat"><div class="loc-stat-n" style="color:var(--gold)">${filtered.length}</div><div class="loc-stat-l">Total Leads</div></div>
+    <div class="loc-stat"><div class="loc-stat-n" style="color:var(--green)">${closed}</div><div class="loc-stat-l">Closed</div></div>
+    <div class="loc-stat"><div class="loc-stat-n" style="color:var(--teal)">₹${totalQ.toLocaleString("en-IN")}</div><div class="loc-stat-l">Quoted</div></div>
+    <div class="loc-stat"><div class="loc-stat-n" style="color:var(--purple)">₹${totalA.toLocaleString("en-IN")}</div><div class="loc-stat-l">Advance</div></div>`;
+
+        // leads list
+        const leadsEl = document.getElementById("loc-leads");
+        if (!filtered.length) {
+          leadsEl.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">No leads in ${area || city} yet.<br>Click "+ Add Lead Here" to add one.</div></div>`;
+        } else {
+          leadsEl.innerHTML = filtered
+            .map(
+              (l) => `
+      <div class="loc-lead-card">
+        <div>
+          <div class="loc-lead-name" onclick="openEditLead('${l.id}')">${l.business_name}</div>
+          <div class="loc-lead-meta">${l.niche || "—"} · ${l.area || "—"} · ${l.phone || "—"}</div>
+        </div>
+        <span class="bdg ${l.lead_status === "Deal Closed" ? "bdg-closed" : l.lead_status === "Not Interested" ? "bdg-not" : "bdg-interested"}">${l.lead_status || "New"}</span>
+        <span class="bdg ${l.priority === "Hot" ? "bdg-hot" : l.priority === "Cold" ? "bdg-cold" : "bdg-warm"}">${l.priority || "Warm"}</span>
+        ${l.phone ? `<a class="tbl-wa" href="https://wa.me/${(l.whatsapp_number || l.phone).replace(/\D/g, "")}?text=${encodeURIComponent("Hello " + l.business_name + " ji, main Shahid from DopeOrca 🙏")}" target="_blank">📱</a>` : '<span style="width:40px"></span>'}
+      </div>`,
+            )
+            .join("");
+        }
+
+        // show add button
+        document.getElementById("loc-add-btn").style.display = "block";
+        // store current location for pre-filling form
+        window._locContext = { country, city, area };
+      }
+
+      function locAddLead() {
+        openAddLead();
+        // pre-fill location fields after modal opens
+        setTimeout(() => {
+          const ctx = window._locContext || {};
+          if (ctx.city) document.getElementById("f-city").value = ctx.city;
+          if (ctx.area) document.getElementById("f-area").value = ctx.area;
+        }, 50);
+      }
+
+      /* ─── Update form country/city/area dropdowns ────── */
+      function buildFormLocationDropdowns() {
+        // Country dropdown in form
+        const countrySel = document.getElementById("f-country");
+        if (!countrySel) return;
+        Object.keys(LOC_DATA).forEach((c) => {
+          const o = document.createElement("option");
+          o.value = c;
+          o.textContent = c;
+          countrySel.appendChild(o);
+        });
+        countrySel.addEventListener("change", () => {
+          const city = document.getElementById("f-city-sel");
+          const area = document.getElementById("f-area-sel");
+          city.innerHTML = '<option value="">— Select City —</option>';
+          area.innerHTML = '<option value="">— Select Area —</option>';
+          const c = countrySel.value;
+          if (!c) return;
+          Object.keys(LOC_DATA[c] || {}).forEach((ct) => {
+            const o = document.createElement("option");
+            o.value = ct;
+            o.textContent = ct;
+            city.appendChild(o);
+          });
+        });
+        document
+          .getElementById("f-city-sel")
+          .addEventListener("change", function () {
+            const country = document.getElementById("f-country").value;
+            const area = document.getElementById("f-area-sel");
+            area.innerHTML = '<option value="">— Select Area —</option>';
+            const areas = LOC_DATA[country]?.[this.value] || [];
+            areas.forEach((a) => {
+              const o = document.createElement("option");
+              o.value = a;
+              o.textContent = a;
+              area.appendChild(o);
+            });
+            document.getElementById("f-city").value = this.value;
+          });
+        document
+          .getElementById("f-area-sel")
+          .addEventListener("change", function () {
+            document.getElementById("f-area").value = this.value;
+          });
+      }
+
+      function getFollowUpTimer(d) {
+        if (!d) return "";
+        const t = new Date();
+        t.setHours(0, 0, 0, 0);
+        const f = new Date(d);
+        f.setHours(0, 0, 0, 0);
+        const diff = Math.round((f - t) / 864e5);
+        if (diff === 0)
+          return '<span class="fu-timer fu-today">🔴 TODAY</span>';
+        if (diff < 0)
+          return (
+            '<span class="fu-timer fu-overdue">⚠ ' +
+            Math.abs(diff) +
+            "d late</span>"
+          );
+        if (diff <= 2)
+          return '<span class="fu-timer fu-soon">⏰ ' + diff + "d</span>";
+        return '<span class="fu-timer fu-ok">📅 ' + diff + "d</span>";
+      }
+    </script>
+    <div class="overlay" id="logout-overlay">
+      <div class="modal" style="width: 300px; text-align: center">
+        <div
+          class="modal-head"
+          style="justify-content: center; padding: 22px 20px 0"
+        >
+          <div class="modal-title">Logout?</div>
+        </div>
+        <div class="modal-body" style="padding: 14px 20px 22px">
+          <p style="color: var(--sub); font-size: 13px; margin-bottom: 18px">
+            Are you sure you want to logout?
+          </p>
+          <div style="display: flex; gap: 10px">
+            <button
+              class="btn btn-ghost"
+              onclick="cancelLogout()"
+              style="flex: 1"
+            >
+              Cancel
+            </button>
+            <button
+              class="btn btn-red"
+              onclick="confirmLogout()"
+              style="flex: 1"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
